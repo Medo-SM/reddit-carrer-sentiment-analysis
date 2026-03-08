@@ -7,7 +7,7 @@ from datetime import datetime, timezone, timedelta
 # --- 1. CONFIGURATION ---
 SUBREDDITS = ['datascience', 'cscareerquestions']
 START_DATE = datetime(2019, 1, 1, tzinfo=timezone.utc)
-END_DATE = datetime(2025, 12, 31, tzinfo=timezone.utc)
+END_DATE = datetime(2025, 1, 31, tzinfo=timezone.utc)
 DATA_DIR = "/content/drive/MyDrive/reddit_project"
 CHUNK_DAYS = 7
 
@@ -69,6 +69,7 @@ async def scrape_reddit():
 
                         if resp.status_code == 200:
                             data = resp.json().get('data', [])
+
                             if data:
                                 # --- Deduplication against the last saved item ---
                                 # If the first item has the same timestamp and id as last saved, skip it.
@@ -83,13 +84,26 @@ async def scrape_reddit():
                                 # Write new items (excluding the possible duplicate)
                                 with open(file_path, 'a', encoding='utf-8') as f:
                                     for item in data[start_index:]:
-                                        clean = {
+                                          if mode == 'comment':
+                                            clean = {
                                             "id": item.get("id"),
                                             "created_utc": item.get("created_utc"),
                                             "author": item.get("author"),
-                                            "content": item.get("body") if mode == 'comment' else item.get("title")  # submissions have title
-                                        }
-                                        f.write(json.dumps(clean) + "\n")
+                                            "content": item.get("body"),
+                                            "score": item.get("score"),           # <-- ADDED
+                                            "link_id": item.get("link_id"),       # submission this comment belongs to
+                                            "parent_id": item.get("parent_id")    # immediate parent (comment or submission)
+                                            }
+                                          else:  # submission
+                                            clean = {
+                                            "id": item.get("id"),
+                                            "created_utc": item.get("created_utc"),
+                                            "author": item.get("author"),
+                                            "content": item.get("title"),         # submissions use title
+                                            "score": item.get("score")            # <-- ADDED
+                                             # Optional: add "url", "num_comments", etc.
+                                            }
+                                          f.write(json.dumps(clean) + "\n")
 
                                 # Update counters and last ID
                                 written_items = data[start_index:]
