@@ -1,0 +1,16 @@
+# config/config.yaml
+
+paths:
+  raw_data_dir: "data/raw"
+  processed_data_dir: "data/processed"
+  model_dir: "models/checkpoints"
+
+preprocessing:
+  max_len: 256
+  lowercase: true
+
+training:
+  batch_size: 32
+  epochs: 5
+  learning_rate: 0.00002
+  seed: 42
