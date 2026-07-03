@@ -3,6 +3,7 @@
 paths:
   raw_data_dir: "data/raw"
   processed_data_dir: "data/processed"
+  data_samples_dir: "data/samples"
   model_dir: "models/checkpoints"
 
 preprocessing:
