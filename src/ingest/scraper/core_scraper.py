@@ -5,8 +5,9 @@ import os
 from datetime import datetime, timezone, timedelta
 
 # --- 1. CONFIGURATION ---
-SUBREDDITS = ['datascience', 'cscareerquestions']
-START_DATE = datetime(2019, 1, 1, tzinfo=timezone.utc)
+SUBREDDITS = ['cscareerquestionsEU', 'datascience', 'dataengineering',
+              'cybersecurity', 'SoftwareEngineering', 'cscareerquestions']
+START_DATE = datetime(2023, 1, 1, tzinfo=timezone.utc)
 END_DATE = datetime(2025, 1, 31, tzinfo=timezone.utc)
 DATA_DIR = "/content/drive/MyDrive/reddit_project"
 CHUNK_DAYS = 7
