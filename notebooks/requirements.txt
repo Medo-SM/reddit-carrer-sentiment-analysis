@@ -21,7 +21,7 @@ scikit-learn==1.8.0
 nltk==3.10.0
 
 # --- Sentiment (planned: modeling rework) ---
-# transformers             # uncomment when implementing Plan 2
+transformers             # uncomment when implementing Plan 2
 
 # --- Visualization ---
 matplotlib==3.10.8
