@@ -1,3 +1,19 @@
+# [0.3.0](https://github.com/Medo-SM/reddit-carrer-sentiment-analysis/compare/v0.2.0...v0.3.0) (2026-09-12)
+
+
+### Bug Fixes
+
+* rename misspelled __innit__.py to __init__.py ([c7f1c2c](https://github.com/Medo-SM/reddit-carrer-sentiment-analysis/commit/c7f1c2c01d195c62bc5529e9f5a83251e0616831))
+
+
+### Features
+
+* **config:** add scraper, analysis and modeling sections ([a7cf80a](https://github.com/Medo-SM/reddit-carrer-sentiment-analysis/commit/a7cf80a5fb38bf96e279c3944520469939e9f0bb))
+* **ingest:** extract shared sampling/cleaning utilities ([63c0e8e](https://github.com/Medo-SM/reddit-carrer-sentiment-analysis/commit/63c0e8e7c0ba5fa4eb38796619b0fd59b37970ad))
+* **scraper:** merge scrapers into canonical core_scraper.py ([375f09c](https://github.com/Medo-SM/reddit-carrer-sentiment-analysis/commit/375f09cbde99fd3a8bf008d35420cbcf04d96413))
+
+
+
 # [0.2.0](https://github.com/Medo-SM/reddit-carrer-sentiment-analysis/compare/v0.1.0...v0.2.0) (2026-08-28)
 
 
