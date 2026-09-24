@@ -108,3 +108,28 @@ class TestStateRoundTrip:
             f.write("NOT JSON")
         ts, last_id, count = load_state(str(jsonl), default_ts=0)
         assert (ts, last_id, count) == (100, "a", 1)
+
+    def test_float_created_utc_tail_returns_int_cursor(self, tmp_path):
+        # Regression: reuse of a data file whose last line has a float
+        # created_utc (e.g. 1738367876.0) sent `after=1738367876.0`, which the
+        # Arctic Shift API rejects with HTTP 400. Resume must yield an int.
+        jsonl = tmp_path / "data.jsonl"
+        jsonl.write_text(
+            '{"id": "a", "created_utc": 100}\n'
+            '{"id": "b", "created_utc": 1738367876.0}\n',
+            encoding="utf-8",
+        )
+        ts, last_id, count = get_last_ts_id_and_count(str(jsonl), default_ts=0)
+        assert ts == 1738367876
+        assert isinstance(ts, int)
+        assert (last_id, count) == ("b", 2)
+
+    def test_load_state_sidecar_float_cursor_normalized(self, tmp_path):
+        jsonl = tmp_path / "data.jsonl"
+        jsonl.write_text('{"id": "a", "created_utc": 100}\n', encoding="utf-8")
+        state_file = _state_path(str(jsonl))
+        save_state(str(jsonl), current_ts=1738367876.0, last_id="b", total_count=2)
+        ts, last_id, count = load_state(str(jsonl), default_ts=0)
+        assert ts == 1738367876
+        assert isinstance(ts, int)
+        assert (last_id, count) == ("b", 2)
