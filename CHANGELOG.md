@@ -1,3 +1,12 @@
+## [0.3.2](https://github.com/Medo-SM/reddit-carrer-sentiment-analysis/compare/v0.3.1...v0.3.2) (2026-09-24)
+
+
+### Bug Fixes
+
+* **scraper:** cast float created_utc to int in archived arctic scraper ([18a4afb](https://github.com/Medo-SM/reddit-carrer-sentiment-analysis/commit/18a4afb5260cb0181365b8694f46bd481a5090c2))
+
+
+
 ## [0.3.1](https://github.com/Medo-SM/reddit-carrer-sentiment-analysis/compare/v0.3.0...v0.3.1) (2026-09-24)
 
 
