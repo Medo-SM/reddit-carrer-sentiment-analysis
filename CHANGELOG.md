@@ -1,3 +1,12 @@
+## [0.3.1](https://github.com/Medo-SM/reddit-carrer-sentiment-analysis/compare/v0.3.0...v0.3.1) (2026-09-24)
+
+
+### Bug Fixes
+
+* **scraper:** reduce API load to respect Arctic Shift rate limits ([cd72a4c](https://github.com/Medo-SM/reddit-carrer-sentiment-analysis/commit/cd72a4c76b010a26b57d751befd779329e4a280a))
+
+
+
 # [0.3.0](https://github.com/Medo-SM/reddit-carrer-sentiment-analysis/compare/v0.2.0...v0.3.0) (2026-09-12)
 
 
