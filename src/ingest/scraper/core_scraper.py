@@ -72,11 +72,11 @@ def _scraper_cfg(cfg: dict[str, Any]) -> dict[str, Any]:
         "start_date": "2023-01-01",
         "end_date": "2025-01-31",
         "chunk_days": 7,
-        "rate_limit_per_hour": 360,
+        "rate_limit_per_hour":120, 
         "min_429_wait_sec": 30,
         "max_consecutive_429": 3,
         "hard_stop_wait_sec": 3600,
-        "request_delay_sec": 1.0,
+        "request_delay_sec": 5.0,
         "user_agent": (
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
             "(KHTML, like Gecko) Chrome/120.0 Safari/537.36"
@@ -146,7 +146,7 @@ def load_state(
         try:
             with open(state_file, "r", encoding="utf-8") as f:
                 state = json.load(f)
-            return state["current_ts"], state.get("last_id"), state.get("total_count", 0)
+            return int(state["current_ts"]), state.get("last_id"), state.get("total_count", 0)
         except (json.JSONDecodeError, KeyError, OSError):
             logger.warning(
                 "Corrupt state file %s; falling back to scanning the data file.",
@@ -202,7 +202,9 @@ def get_last_ts_id_and_count(
             last_item = item
     if last_item is None:
         return default_ts, None, 0
-    return last_item["created_utc"], last_item["id"], line_count
+    # Normalize to int: JSON floats (e.g. 1738367876.0) are rejected by the
+    # Arctic Shift API as an invalid after/before date.
+    return int(last_item["created_utc"]), last_item["id"], line_count
 
 
 # ---------------------------------------------------------------------------
@@ -250,8 +252,8 @@ async def scrape_reddit(scfg: dict[str, Any]) -> None:
                         url = f"{scfg['api_base']}/{API_MODE[mode]}/search/"
                         params = {
                             "subreddit": sub,
-                            "after": current_ts,
-                            "before": next_ts,
+                            "after": int(current_ts),
+                            "before": int(next_ts),
                             "limit": 100,
                             "sort": "asc",
                         }
@@ -345,7 +347,7 @@ async def scrape_reddit(scfg: dict[str, Any]) -> None:
                                     if mode == "comment":
                                         clean = {
                                             "id": item.get("id"),
-                                            "created_utc": item.get("created_utc"),
+                                            "created_utc": int(item.get("created_utc")),
                                             "author": item.get("author"),
                                             "content": item.get("body"),
                                             "score": item.get("score"),
@@ -355,7 +357,7 @@ async def scrape_reddit(scfg: dict[str, Any]) -> None:
                                     else:
                                         clean = {
                                             "id": item.get("id"),
-                                            "created_utc": item.get("created_utc"),
+                                            "created_utc": int(item.get("created_utc")),
                                             "author": item.get("author"),
                                             "content": item.get("title"),
                                             "score": item.get("score"),
@@ -364,7 +366,7 @@ async def scrape_reddit(scfg: dict[str, Any]) -> None:
                                 f.flush()
 
                             total_count += len(new_items)
-                            last_ts = new_items[-1]["created_utc"]
+                            last_ts = int(new_items[-1]["created_utc"])
                             last_id = new_items[-1]["id"]
 
                             if last_ts > current_ts:
