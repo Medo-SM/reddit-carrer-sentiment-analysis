@@ -51,7 +51,9 @@ async def get_last_ts_id_and_count(path):
     if last_line is None:
         return int(START_DATE.timestamp()), None, 0
     last_item = json.loads(last_line)
-    return last_item['created_utc'], last_item['id'], line_count
+    # Normalize to int: JSON floats (e.g. 1738367876.0) are rejected by the
+    # Arctic Shift API as an invalid after/before date.
+    return int(last_item['created_utc']), last_item['id'], line_count
 
 # [RATE-LIMIT FIX] Blocks until the rolling hourly budget has a free slot.
 # It is passive while under the cap, so the scraping speed is kept; it only
@@ -84,7 +86,7 @@ async def scrape_reddit():
                     while current_ts < stop_ts:
                         next_ts = min(current_ts + (CHUNK_DAYS * 86400), stop_ts)
                         url = f"{API_BASE}/{API_MODE[mode]}/search/"
-                        params = {"subreddit": sub, "after": current_ts, "before": next_ts, "limit": 100, "sort": "asc"}
+                        params = {"subreddit": sub, "after": int(current_ts), "before": int(next_ts), "limit": 100, "sort": "asc"}
                         print(f"[DEBUG] Requesting {datetime.fromtimestamp(current_ts, timezone.utc)} to {datetime.fromtimestamp(next_ts, timezone.utc)}")
                         
                         try:
@@ -104,14 +106,14 @@ async def scrape_reddit():
                                     with open(file_path, 'a', encoding='utf-8') as f:
                                         for item in data[start_index:]:
                                             if mode == 'comment':
-                                                clean = {"id": item.get("id"), "created_utc": item.get("created_utc"), "author": item.get("author"), "content": item.get("body"), "score": item.get("score"), "link_id": item.get("link_id"), "parent_id": item.get("parent_id")}
+                                                clean = {"id": item.get("id"), "created_utc": int(item.get("created_utc")), "author": item.get("author"), "content": item.get("body"), "score": item.get("score"), "link_id": item.get("link_id"), "parent_id": item.get("parent_id")}
                                             else:
-                                                clean = {"id": item.get("id"), "created_utc": item.get("created_utc"), "author": item.get("author"), "content": item.get("title"), "score": item.get("score")}
+                                                clean = {"id": item.get("id"), "created_utc": int(item.get("created_utc")), "author": item.get("author"), "content": item.get("title"), "score": item.get("score")}
                                             f.write(json.dumps(clean) + "\n")
                                     written_items = data[start_index:]
                                     if written_items:
                                         total_count += len(written_items)
-                                        current_ts = written_items[-1]['created_utc']
+                                        current_ts = int(written_items[-1]['created_utc'])
                                         last_id = written_items[-1]['id']
                                     else:
                                         current_ts = next_ts
