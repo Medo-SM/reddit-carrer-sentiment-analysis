@@ -31,7 +31,6 @@ data/
 │   └── reddit/subreddits/
 │       └── *.zst                        # Original compressed Reddit dumps
 └── samples/
-    ├── 1.1/                             # Large sample (~229 MB, ~2.9M lines)
     └── 1.2/                             # Tiny sample (~68 KB, 504 lines)
 ```
 

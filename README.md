@@ -81,6 +81,8 @@ reddit-carrer-sentiment-analysis/
 ├── .github/
 │   └── workflows/
 │       └── changelog.yml         # GitHub Actions semantic release & changelog workflow
+├── archive/
+│   └── scraper/                  # Legacy scraper versions (superseded by core_scraper.py)
 ├── config/
 │   ├── config.yaml               # Centralized configuration (paths, preprocessing, training)
 │   └── README.md                 # Usage documentation for config loading
@@ -92,26 +94,29 @@ reddit-carrer-sentiment-analysis/
 ├── models/                       # Model checkpoints & serialized models
 ├── notebooks/                    # Jupyter notebooks for EDA and modeling
 │   ├── 1.0_data_exploration.ipynb
-│   ├── 1.1_notebook.ipynb
-│   ├── 1.2_notebook.ipynb
 │   ├── 1.3_notebook.ipynb
+│   ├── archive/                  # Superseded notebook iterations (1.1, 1.2)
 │   └── requirements.txt          # Notebook-specific environment requirements
+├── plans/                        # Planning documents for upcoming work
+│   └── modeling-rework.md
+├── scripts/                      # Operational data-repair tools
+│   ├── corrupted_line_locator.py # Line-by-line JSON validity inspector
+│   ├── corruption_fix.py         # Automated end-of-file truncation repair tool
+│   └── missing_dates_check.py    # Date coverage audit tool
 ├── src/
 │   ├── __init__.py
 │   └── ingest/
 │       ├── __init__.py
+│       ├── sampling.py           # Sampling & text-cleaning pipeline
 │       ├── zst_to_parquet.py     # ZST stream decompressor & Parquet converter
 │       └── scraper/
 │           ├── __init__.py
-│           ├── core_scraper.py   # Async PullPush API scraper with retry logic
-│           ├── corrupted_line_locator.py # Line-by-line JSON validity inspector
-│           ├── corruption_fix.py # Automated end-of-file truncation repair tool
-│           └── missing_dates_check.py    # Date coverage audit tool
+│           └── core_scraper.py   # Async Arctic Shift API scraper with retry logic
 ├── tests/                        # Unit and integration tests
 │   └── __init__.py
 ├── CHANGELOG.md                  # Project changelog generated via conventional commits
 ├── LICENSE                       # MIT License
-├── package.json                  # Semantic versioning manifest (v0.1.0)
+├── package.json                  # Semantic versioning manifest (used by changelog workflow)
 ├── requirements_cpu.txt          # Dependencies for CPU execution
 ├── requirements_gpu.txt          # Dependencies for CUDA/GPU execution
 └── README.md                     # Project documentation
@@ -228,8 +233,8 @@ learning_rate = config["training"]["learning_rate"]
 Explore data and experiment with models using the provided notebooks in `notebooks/`:
 
 - `1.0_data_exploration.ipynb`: Data loading, word frequencies, and initial text cleaning diagnostics.
-- `1.1_notebook.ipynb` & `1.2_notebook.ipynb`: Advanced EDA, sub-community analysis, and sentiment trends.
 - `1.3_notebook.ipynb`: Topic modeling with BERTopic, sentiment scoring, and topic evolution visualization.
+- `archive/`: Superseded notebook iterations (`1.1`, `1.2`) kept for reference.
 
 ---
 
