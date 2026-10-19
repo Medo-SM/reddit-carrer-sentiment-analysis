@@ -1,0 +1,104 @@
+# Research Proposal: Longitudinal Analysis of Tech Workforce Sentiment and Behavioral Adaptation Across Economic and AI Shocks (2020–2025)
+
+**Candidate Background:** Bachelor of Business Information Technology (BIT)  
+**Target Graduate Tracks:** M.Sc. in Data Science / Applied Data Science / Software Engineering  
+
+## 1. Proposed Working Titles
+
+* **Applied Data Science & NLP Focus (Recommended):** *From Pandemic Boom to AI Disruption: Longitudinal Topic Modeling, LLM Behavioral Taxonomies, and Econometric Analysis of Tech Career Discourse on Reddit (2020–2025)*
+* **Empirical Software Engineering Focus:** *How Software Engineers and Data Scientists Navigate Market Shocks: A Multi-Cohort Study of Career Sentiment, Layoff Anxiety, and AI Skill Pivoting*
+* **Computational Social Science Focus:** *Do Developer Communities Predict Tech Labor Contractions? Aligning Six Years of Reddit Career Discourse with Macroeconomic Layoff Trends*
+
+## 2. Executive Abstract
+
+The global technology workforce has experienced four distinct structural shocks between 2020 and 2025: the initial COVID-19 hiring freeze, the 2021 hyper-growth recruitment surge, the 2022–2023 macroeconomic mass layoffs, and the 2023–2025 generative AI workflow transformation. While online practitioner communities on Reddit (`r/cscareerquestions`, `r/ExperiencedDevs`, `r/datascience`, and `r/MachineLearning`) capture real-time workforce adaptation, existing computational social science studies suffer from three critical limitations: (1) reliance on generic, off-the-shelf sentiment polarity models that misclassify software engineering jargon and community gallows humor, (2) treating the technology workforce as a monolith rather than stratifying by seniority and specialization, and (3) a lack of econometric grounding linking online discourse to verified external labor-market indicators.
+
+Leveraging continuous historical archives from [Pushshift](https://www.google.com/search?q=https%3A%2F%2Fojs.aaai.org%2Findex.php%2FICWSM%2Farticle%2Fview%2F7347%2F7201), [PullPush](https://www.google.com/search?q=https%3A%2F%2Fpullpush.io%2F), and [Academic Torrents 2025 dumps](https://www.google.com/search?q=https%3A%2F%2Facademictorrents.com%2Fdetails%2F481bf2eac43172ae724fd6c75dbcb8e27de77734) (preprocessed into partitioned Apache Parquet datasets for scalable execution), this research analyzes millions of posts and comments from 2020 through 2025. Methodologically, the study replaces naive positive/negative polarity scoring with a domain-adapted Large Language Model (LLM) behavioral taxonomy and dynamic neural topic modeling via [BERTopic](https://www.google.com/search?q=https%3A%2F%2Farxiv.org%2Fabs%2F2311.15800). Finally, using Interrupted Time Series (ITS) and Granger causality tests anchored against verified industry layoff records from [Layoffs.fyi](https://www.google.com/search?q=https%3A%2F%2Flayoffs.fyi%2F) and major AI model release milestones, this study quantifies how career anxiety and skill-pivoting behaviors evolve and diverge between entry-level applicants and senior practitioners.
+
+## 3. Research Problem Statement
+
+### 3.1 The Core Empirical Problem: Untracked Workforce Adaptation During Structural Shocks
+
+Traditional labor-market statistics—such as quarterly unemployment filings and annual compensation surveys—operate with significant reporting lags and fail to capture the micro-level behavioral adaptations of software engineers and data scientists (e.g., skill pivoting toward AI tooling, interview burnout, compensation downgrading, or exiting the industry). Although millions of practitioners document these transitions daily across career-focused subreddits, there is no validated longitudinal framework measuring whether shifts in community discourse **lead, lag, or diverge from** real-world macroeconomic contractions and technological disruptions.
+
+### 3.2 The Methodological & NLP Problem: Failure of Generic Polarity Classifiers in Technical Domains
+
+Recent literature has heavily relied on combining lexicon-based tools (such as VADER) or generic BERT polarity classifiers with [BERTopic on Reddit data](https://www.google.com/search?q=https%3A%2F%2Farxiv.org%2Fabs%2F2311.15800) to track [public attitudes toward ChatGPT](https://www.google.com/search?q=https%3A%2F%2Fwww.researchgate.net%2Fpublication%2F380570673_The_public_attitude_towards_ChatGPT_on_reddit_A_study_based_on_unsupervised_learning_from_sentiment_analysis_and_topic_modeling) and [LLM perceptions](https://www.google.com/search?q=https%3A%2F%2Fwww.researchgate.net%2Fpublication%2F389391659_Analyzing_User_Perceptions_of_Large_Language_Models_LLMs_on_Reddit_Sentiment_and_Topic_Modeling_of_ChatGPT_and_DeepSeek_Discussions). However, empirical evaluations demonstrate that off-the-shelf sentiment models fail systematically when applied to software engineering discourse ([Revisiting Sentiment Analysis for Software Engineering in the Era of LLMs](https://www.google.com/search?q=https%3A%2F%2Fwww.researchgate.net%2Fpublication%2F384318929_Revisiting_Sentiment_Analysis_for_Software_Engineering_in_the_Era_of_Large_Language_Models)). Technical idioms (*"killed the process," "rejected promise," "brute-forced the interview"*) and defensive irony (*"doomposting"* in [r/cscareerquestions layoff threads](https://www.google.com/search?q=https%3A%2F%2Fwww.reddit.com%2Fr%2Fcscareerquestions%2Fcomments%2F1i308r7%2Fwhy_are_people_equating_us_tech_layoffs_swe_jobs%2F)) distort standard polarity metrics, necessitating a domain-specific behavioral classification schema rather than simple positive/negative scoring.
+
+### 3.3 The Cohort & Structural Attribution Problem: Disentangling Macroeconomic Layoffs from AI Displacement
+
+Public and academic narratives frequently conflate macroeconomic post-pandemic corrections (driven by interest rate hikes and overhiring in 2021) with structural job displacement driven by generative AI ([r/cscareerquestions AI vs. US tech layoffs discourse](https://www.google.com/search?q=https%3A%2F%2Fwww.reddit.com%2Fr%2Fcscareerquestions%2Fcomments%2F1i308r7%2Fwhy_are_people_equating_us_tech_layoffs_swe_jobs%2F)). Furthermore, prior studies aggregate developer discussions without distinguishing between entry-level job seekers and experienced engineers. Without longitudinal cohort stratification and econometric time-series decomposition, researchers cannot determine whether AI anxiety is primarily an entry-level barrier or an industry-wide structural shift.
+
+## 4. Research Questions and Testable Hypotheses
+
+| ID | Research Question | Testable Hypothesis | Primary Evaluation Metric |
+| :--- | :--- | :--- | :--- |
+| **RQ1** | **Domain-Specific NLP Classification:** To what extent does a fine-tuned, LLM-distilled behavioral classifier outperform lexicon (VADER) and standard RoBERTa polarity models on software engineering career discourse? | A domain-adapted classifier trained on annotated tech career threads achieves $>15\%$ higher Macro-$F_1$ than generic sentiment baselines by accurately resolving technical polysemy, sarcasm, and gallows humor. | Macro-$F_1$, Cohen's Kappa ($\kappa$) against human annotations, and error-rate reduction on sarcastic/jargon subsets. |
+| **RQ2** | **Longitudinal Topic Evolution (2020–2025):** How do dominant career themes transition across the four structural regimes (COVID-19 freeze, 2021 boom, 2022–2023 interest-rate layoffs, and 2024–2025 AI adoption)? | Dynamic topic modeling reveals a statistically significant structural shift from *compensation maximization and remote-work leverage* (2021) to *macroeconomic layoff survival* (2022–2023) and *AI-assisted productivity vs. skill obsolescence* (2024–2025). | Dynamic [BERTopic](https://www.google.com/search?q=https%3A%2F%2Farxiv.org%2Fabs%2F2311.15800) coherence ($C_v$), topic diversity, and Interrupted Time Series (ITS) regime-shift coefficients. |
+| **RQ3** | **Cohort Divergence (Junior vs. Senior & Role):** How do sentiment trajectories and AI adaptation behaviors diverge between entry-level communities (`r/cscareerquestions`) and veteran or specialized practitioners (`r/ExperiencedDevs`, `r/datascience`)? | Entry-level communities exhibit acute, persistent spikes in *existential replacement anxiety* and *application fatigue*, whereas senior practitioner communities pivot toward *AI workflow integration*, *system architecture oversight*, and *hiring bar inflation*. | Jensen-Shannon divergence of behavioral taxonomy distributions and cosine similarity of cohort topic embeddings over time. |
+| **RQ4** | **Econometric Grounding & Lead-Lag Dynamics:** Do shifts in Reddit career sentiment and layoff topic prevalence statistically lead, coincide with, or lag verified industry headcount reductions? | Surges in negative career sentiment and layoff-related behavioral classes Granger-cause verified monthly layoff spikes on [Layoffs.fyi](https://www.google.com/search?q=https%3A%2F%2Flayoffs.fyi%2F) by 2 to 4 weeks due to informal insider discussions preceding formal public announcements. | Granger causality $F$-statistics, p-values across weekly lags $k \in \{1..8\}$, and cross-correlation coefficients. |
+
+## 5. Literature Review & Positioning Against Prior Work
+
+While social media mining is well established, existing research at the intersection of Reddit, NLP, and technology careers leaves clear analytical gaps that this proposal addresses:
+
+| Literature Stream | Representative Prior Work | Core Limitation in Existing Studies | How This Proposal Advances the State of the Art |
+| :--- | :--- | :--- | :--- |
+| **Reddit AI & Topic Modeling Studies** | [ChatGPT in Education (arXiv 2311.15800)](https://www.google.com/search?q=https%3A%2F%2Farxiv.org%2Fabs%2F2311.15800); [Public Converse on AI (JSC 2026)](https://www.google.com/search?q=https%3A%2F%2Fwww.sciopen.com%2Farticle%2F10.23919%2FJSC.2026.0002); [VADER + BERTopic on Reddit](https://www.google.com/search?q=https%3A%2F%2Fwww.researchgate.net%2Fpublication%2F387481480_Reddit_comment_analysis_sentiment_prediction_and_topic_modeling_using_VADER_and_BERTopic) | Relies on descriptive topic frequency plots over short windows without external macroeconomic baselines or seniority stratification. | Pairs dynamic [BERTopic](https://www.google.com/search?q=https%3A%2F%2Farxiv.org%2Fabs%2F2311.15800) modeling over a full 6-year window (2020–2025) with Interrupted Time Series (ITS) and [Layoffs.fyi](https://www.google.com/search?q=https%3A%2F%2Flayoffs.fyi%2F) ground truth. |
+| **Software Engineering Sentiment Analysis** | [Revisiting Sentiment Analysis for SE in the Era of LLMs](https://www.google.com/search?q=https%3A%2F%2Fwww.researchgate.net%2Fpublication%2F384318929_Revisiting_Sentiment_Analysis_for_Software_Engineering_in_the_Era_of_Large_Language_Models) | Evaluates sentiment primarily on code repositories and issue trackers (GitHub, Jira, Stack Overflow) rather than longitudinal career and labor-market discussions. | Extends LLM-calibrated sentiment and multi-class behavioral classification to software engineering career resilience and labor economics. |
+| **Longitudinal Reddit Data Archives** | [Baumgartner et al. (Pushshift ICWSM 2020)](https://www.google.com/search?q=https%3A%2F%2Fojs.aaai.org%2Findex.php%2FICWSM%2Farticle%2Fview%2F7347%2F7201); [PullPush](https://www.google.com/search?q=https%3A%2F%2Fpullpush.io%2F) & [Academic Torrents 2025 Dumps](https://www.google.com/search?q=https%3A%2F%2Facademictorrents.com%2Fdetails%2F481bf2eac43172ae724fd6c75dbcb8e27de77734) | Archival dumps provide raw multi-terabyte compressed JSON streams but lack domain-curated, anonymized benchmarks for tech workforce research. | Releases a reproducible, privacy-preserving annotated benchmark of tech career discourse across five major practitioner communities through 2025. |
+
+## 6. Proposed Methodology & System Architecture
+
+### Phase 1: Data Ingestion & Preprocessing Infrastructure (Engineering Foundation)
+
+1. **Longitudinal Corpus Assembly (2020–2025):** Extract all submissions and comments from January 2020 through December 2025 using historical [Pushshift](https://www.google.com/search?q=https%3A%2F%2Fojs.aaai.org%2Findex.php%2FICWSM%2Farticle%2Fview%2F7347%2F7201) and [PullPush](https://www.google.com/search?q=https%3A%2F%2Fpullpush.io%2F) / [Academic Torrents 2025 archives](https://www.google.com/search?q=https%3A%2F%2Facademictorrents.com%2Fdetails%2F481bf2eac43172ae724fd6c75dbcb8e27de77734) across target communities:
+   * *Entry-Level & General Career:* [r/cscareerquestions](https://www.google.com/search?q=https%3A%2F%2Fwww.reddit.com%2Fr%2Fcscareerquestions%2Fcomments%2F1reyzy6%2Ffeeling_pessimistic_about_ai%2F), `r/csMajors`
+   * *Senior & Experienced Practitioners:* [r/ExperiencedDevs](https://www.google.com/search?q=https%3A%2F%2Fwww.reddit.com%2Fr%2FExperiencedDevs%2Fcomments%2F1hm8gxj%2Fai_wont_replace_software_engineers_but_an%2F)
+   * *Data Science & AI Specialists:* `r/datascience`, [r/MachineLearning](https://www.google.com/search?q=https%3A%2F%2Fwww.reddit.com%2Fr%2FMachineLearning%2Fcomments%2F1jhap5l%2Fd_on_sentiment_analysis%2F)
+   * *Labor Contraction Baseline:* [r/Layoffs](https://www.google.com/search?q=https%3A%2F%2Fwww.reddit.com%2Fr%2FLayoffs%2Fcomments%2F1syosg1%2Fi_feel_it_coming%2F)
+2. **Cleaning, Deduplication, and Privacy-Preserving Pipeline:** Filter out automated moderator bots, `[deleted]`/`[removed]` stubs, and low-information tokens. Hash author usernames (`SHA-256` with cryptographic salt) to enable longitudinal user-survival analysis while upholding strict academic research ethics. Store the cleaned corpus in partitioned Apache Parquet format purely as an efficient columnar execution layer for downstream NLP and econometric modeling.
+
+### Phase 2: Domain-Adapted Sentiment & Behavioral Taxonomy Modeling (Addresses RQ1)
+
+1. **Gold-Standard Annotation:** Construct a stratified sample of 1,500 posts and comments across all years and cohorts, manually double-annotated for both polarity and a **6-class Career Behavioral Taxonomy**:
+   * *1. Existential AI Displacement Anxiety* (fear of automated replacement or role obsolescence)
+   * *2. Macroeconomic & Layoff Distress* (severance, PIPs, hiring freezes, company downsizing)
+   * *3. Skill Pivoting & Upskilling* (transitioning to LLM engineering, cloud architecture, or adjacent fields)
+   * *4. Recruitment & Interview Fatigue* (ghosting, multi-round OA/LeetCode inflation, application volume)
+   * *5. Compensation & Work-Arrangement Negotiation* (remote-to-office mandates, salary compression)
+   * *6. Career Optimism & Market Recovery* (successful job offers, promotions, positive productivity gains)
+2. **Knowledge Distillation for Scalable Inference:** Benchmark lexicon baselines (VADER), standard transformer encoders (`RoBERTa-base`), and zero/few-shot open-weight LLMs ([following SE LLM sentiment protocols](https://www.google.com/search?q=https%3A%2F%2Fwww.researchgate.net%2Fpublication%2F384318929_Revisiting_Sentiment_Analysis_for_Software_Engineering_in_the_Era_of_Large_Language_Models)). Use high-agreement LLM labels validated against the human gold set to fine-tune a lightweight `DeBERTa-v3` classifier capable of rapid inference across millions of records.
+
+### Phase 3: Dynamic Topic Modeling & Econometric Time-Series Analysis (Addresses RQ2, RQ3, RQ4)
+
+1. **Dynamic Neural Topic Modeling:** Apply [BERTopic](https://www.google.com/search?q=https%3A%2F%2Farxiv.org%2Fabs%2F2311.15800) using dense sentence embeddings (`bge-small-en-v1.5`), UMAP dimensionality reduction, and HDBSCAN clustering, evaluating topic quality via $C_v$ coherence and tracking monthly topic representations across each subreddit cohort.
+2. **Structural Break & Econometric Causality Testing:** Align weekly aggregated behavioral taxonomy proportions and sentiment indices with external ground-truth series—specifically verified tech layoff counts from [Layoffs.fyi](https://www.google.com/search?q=https%3A%2F%2Flayoffs.fyi%2F) and major generative AI release dates (e.g., ChatGPT in Nov 2022, GPT-4 in Mar 2023, reasoning/coding agents in 2024–2025). Execute Interrupted Time Series (ITS) regressions and Granger causality tests to quantify lead-lag relationships and cohort divergence.
+
+## 7. Expected Contributions & Alignment with Master's Scholarship Goals
+
+This proposal is designed to demonstrate graduate-level research maturity for competitive Master's scholarships in **Data Science**, **Applied Data Science**, and **Software Engineering**, building directly on a **Business Information Technology (BIT)** foundation:
+
+* **Applied Data Science & NLP Contribution:** Introduces a domain-adapted 6-class behavioral taxonomy and fine-tuned transformer classifier that resolves the failure modes of generic sentiment tools on technical career discourse.
+* **Empirical Software Engineering & Labor Economics Contribution (The BIT Bridge):** Separates entry-level anxiety from senior practitioner reality and quantifies the lead-lag relationship between developer community sentiment and real-world tech layoffs.
+* **Open Science & Reproducible Software Artifact:** Delivers a modular, containerized Python codebase, an anonymized benchmark dataset, and an interactive [Streamlit](https://www.google.com/search?q=https%3A%2F%2Fstreamlit.io%2F) visual analytics dashboard for reviewers and researchers.
+
+## 8. Proposed 6-Month Execution Timeline
+
+| Month | Milestone Phase | Concrete Deliverables |
+| :--- | :--- | :--- |
+| **Month 1** | **Corpus Extraction & Cleaning** | Extract 2020–2025 target subreddits from [PullPush](https://www.google.com/search?q=https%3A%2F%2Fpullpush.io%2F) / [Academic Torrents dumps](https://www.google.com/search?q=https%3A%2F%2Facademictorrents.com%2Fdetails%2F481bf2eac43172ae724fd6c75dbcb8e27de77734); run bot filtering, SHA-256 anonymization, and Parquet serialization. |
+| **Month 2** | **Taxonomy Annotation & Baseline Audits** | Double-annotate the 1,500-example gold set across the 6 behavioral classes; compute Cohen's Kappa ($\kappa$) and evaluate VADER/RoBERTa failure cases. |
+| **Month 3** | **LLM Distillation & Classifier Fine-Tuning** | Fine-tune `DeBERTa-v3` on the behavioral taxonomy (`RQ1`); run full-scale batch inference across the 2020–2025 corpus. |
+| **Month 4** | **Dynamic BERTopic & Cohort Comparison** | Train dynamic [BERTopic](https://www.google.com/search?q=https%3A%2F%2Farxiv.org%2Fabs%2F2311.15800) models (`RQ2`); compute Jensen-Shannon divergence between junior and senior cohorts (`RQ3`). |
+| **Month 5** | **Econometric Validation & Interactive Demo** | Execute ITS and Granger causality regressions against [Layoffs.fyi](https://www.google.com/search?q=https%3A%2F%2Flayoffs.fyi%2F) (`RQ4`); deploy interactive [Streamlit](https://www.google.com/search?q=https%3A%2F%2Fstreamlit.io%2F) dashboard. |
+| **Month 6** | **Manuscript & Pre-Print Submission** | Finalize 8-page ACM/IEEE LaTeX paper; upload citable pre-print to [arXiv](https://www.google.com/search?q=https%3A%2F%2Farxiv.org%2F) and publish clean GitHub repository for scholarship applications. |
+
+## 9. Key References
+
+1. Baumgartner, J., Zannettou, S., Keegan, B., Squire, M., & Blackburn, J. (2020). [The Pushshift Reddit Dataset](https://www.google.com/search?q=https%3A%2F%2Fojs.aaai.org%2Findex.php%2FICWSM%2Farticle%2Fview%2F7347%2F7201). *Proceedings of the International AAAI Conference on Web and Social Media (ICWSM)*, 14(1), 830–839.
+2. RaiderBDev & PullPush Archival Collective. (2026). [Reddit Comments and Submissions 2025-12 Dataset](https://www.google.com/search?q=https%3A%2F%2Facademictorrents.com%2Fdetails%2F481bf2eac43172ae724fd6c75dbcb8e27de77734), distributed via Academic Torrents and [PullPush.io](https://www.google.com/search?q=https%3A%2F%2Fpullpush.io%2F).
+3. Grootendorst, M. (2022). BERTopic: Neural topic modeling with a class-based TF-IDF procedure; applied to Reddit discourse in [Public Sentiment Analysis and Topic Modeling Regarding ChatGPT (arXiv:2311.15800)](https://www.google.com/search?q=https%3A%2F%2Farxiv.org%2Fabs%2F2311.15800).
+4. ResearchGate Empirical Software Engineering Preprint (2026). [Revisiting Sentiment Analysis for Software Engineering in the Era of Large Language Models](https://www.google.com/search?q=https%3A%2F%2Fwww.researchgate.net%2Fpublication%2F384318929_Revisiting_Sentiment_Analysis_for_Software_Engineering_in_the_Era_of_Large_Language_Models).
+5. Journal of Social Computing (2026). [Exploring Public Converse on AI via Reddit: A Topic Modeling and Sentiment Analysis](https://www.google.com/search?q=https%3A%2F%2Fwww.sciopen.com%2Farticle%2F10.23919%2FJSC.2026.0002).
+6. Lee, R. (2020–2026). [Layoffs.fyi: Tech and Startup Layoff Tracker](https://www.google.com/search?q=https%3A%2F%2Flayoffs.fyi%2F).

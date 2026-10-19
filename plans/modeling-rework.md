@@ -1,4 +1,7 @@
-# Plan: Modeling Pipeline Rework
+# Modeling Pipeline Rework — Technical Detail
+
+**Status: Active — technical reference for `src/modeling/` implementation.**  
+See `plans/notebook-architecture.md` for the build guide and `plans/research-plan.md` for research context.
 
 ## Context
 
@@ -324,11 +327,15 @@ Use `pytest` everywhere (aligned with the consolidation plan). Add markers for s
 - `gensim` dependency needed for topic coherence (c_v) evaluation — add to requirements.
 - Optional follow-up (NOT in this pass): fine-tune roberta on hand-labeled Reddit data.
 
-## Files touched (when implemented)
+## Files Touched (when implemented)
 
 - `src/modeling/` (new module: `__init__.py`, `load.py`, `text.py`, `topics.py`, `sentiment.py`, `cache.py`, `tracking.py`)
-- `notebooks/1.3_notebook.ipynb` (cells rewritten)
+- `notebooks/2.0_sampling.ipynb` (new — replaces cells 1–16 of 1.3)
+- `notebooks/3.0_topic_modeling.ipynb` (new — replaces cells 28–34 of 1.3)
+- `notebooks/4.0_sentiment_analysis.ipynb` (new — replaces cells 29–31 of 1.3)
+- `notebooks/5.0_results_and_viz.ipynb` (new — replaces cells 35–38 of 1.3)
+- `notebooks/archive/1.3_notebook.ipynb` (moved here once new notebooks are validated)
 - `config/config.yaml` (`modeling:` section)
-- `tests/test_{text,dates,sentiment,topics,cache,tracking,reproducibility}.py`
+- `tests/test_{text,dates,sentiment,topics,cache,tracking}.py`
 - `requirements_cpu.txt`, `requirements_gpu.txt` (add `gensim`, `transformers`, `tqdm`)
 - `README.md` modeling section
