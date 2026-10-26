@@ -1,0 +1,50 @@
+# AI Implemented workspace config — read-only references to shared data/
+paths:
+  raw_data_dir: "../data/raw"
+  data_samples_dir: "../data/samples"
+  ai_output_dir: "data/output"     # AI-only outputs: figures, CSVs, cached models
+
+preprocessing:
+  max_len: 256
+  lowercase: true
+
+analysis:
+  # Only the 6 subreddits with existing parquet files in data/raw/
+  # r/ExperiencedDevs and r/csMajors are out of scope for this pass (no raw data yet)
+  subreddits:
+    - cscareerquestions
+    - cscareerquestionsEU
+    - datascience
+    - dataengineering
+    - cybersecurity
+    - SoftwareEngineering
+  sample_size: 4000
+  dataset_types:
+    - submissions
+    - comments
+
+modeling:
+  embedding_model: "all-MiniLM-L6-v2"
+  umap:
+    n_neighbors: 15
+    n_components: 5
+    min_dist: 0.0
+    metric: cosine
+    random_state: 42          # DO NOT change — reproducibility
+  hdbscan:
+    min_cluster_size: 25      # was 100 in root config → causes Bug 3 (48% outlier rate)
+    min_samples: 5
+    metric: euclidean
+    cluster_selection_method: eom
+    prediction_data: true
+  top_n_words: 10
+  sentiment_model: "cardiffnlp/twitter-roberta-base-sentiment"
+  sentiment_batch_size: 64
+  device: "auto"              # auto, cuda, cpu, mps
+  max_sample_cpu: 5000
+  seed: 42
+  cache_dir: "data/output/cache"
+  experiment_log_dir: "data/output/experiments"
+  dataset_types:
+    - submissions
+    - comments
