@@ -4,11 +4,11 @@ import os
 import pyarrow.parquet as pq   
 import pyarrow as pa
 import pandas as pd
-import nltk
-from nltk.corpus import stopwords
-nltk.download('stopwords')
+import html
 
 class ParquetHandling:
+    def __init__(self, path):
+        self.path = path
 
     def getParquetFromPath(self, path):
         """This only takes a single parameter Path"""    
@@ -34,45 +34,32 @@ class ParquetHandling:
         return df_date_sorted
         
 
-class TextHandling:
-    def removeSpecialSymbols(text):
-        # Data cleaning: remove special symbols and links
-        text = re.sub(r'http\S+', '', text) # Remove links
-        text = re.sub(r'\W+', ' ', text) # Remove special symbols
+class SentimentTextCleaner:
+    def clean_text(self, text: str) -> str:
+        if not isinstance(text, str):
+            return ""
+        # 1. Decode HTML entities Reddit exports often leave behind (&amp; -> &)
+        text = html.unescape(text)
+        # 2. Remove URLs (both raw links and markdown links [text](url))
+        text = re.sub(r"http\S+|www\.\S+", "", text)
+        # 3. Remove Reddit markdown formatting (*, _, >, ~) without deleting punctuation (!, ?)
+        text = re.sub(r"[*_~>`#]+", "", text)
+        # 4. Collapse multiple spaces/newlines into a single space
+        text = re.sub(r"\s+", " ", text).strip()
         return text
 
-    def preprocessText(text):
-        # Text preprocessing: convert to lowercase, remove punctuation, and numbers
-        text = text.lower()
-        text = re.sub(r'\d+', '', text) # Remove numbers
-        #text = re.sub(r'[^\w\s]', '', text) # Remove punctuation
-        return text
-
-    def tokenizeText(text):
-        # Text tokenization: split the text by space
-        return text.split()
-
-    def removeStopwords(words_list):
-        # Stopwords handling: remove stopwords
-        stop_words = set(stopwords.words('english'))
-        return [word for word in words_list if word.lower() not in
-            stop_words]
-    
-    def removeShortWords(words_list):
-        # Remove words with length less than or equal to 2
-        return [word for word in words_list if len(word) > 2]
-
-    def reassembleText(text):
-        sentence = " ".join(text)
-        return sentence
-    
-    def cleanModText(self, df: pd.DataFrame):
-        filterMask = (
-            (df["text"].str.contains("I am a bot"))
-            & df["text"].str.contains("[removed by moderator]")
+    def clean_dataframe(self, df: pd.DataFrame, col: str = "text") -> pd.DataFrame:
+        df = df.copy()
+        # Drop null, deleted, or bot/moderator rows (note regex=False and | for OR)
+        is_noise = (
+            df[col].isna()
+            | df[col].isin(["[deleted]", "[removed]", ""])
+            | df[col].str.contains("I am a bot", regex=False, na=False)
+            | df[col].str.contains("[removed by moderator]", regex=False, na=False)
         )
-        return df[~filterMask]
-        
+        df = df[~is_noise]
+        df["clean_text"] = df[col].apply(self.clean_text)
+        return df[df["clean_text"] != ""]    
 
         
 def main():
@@ -83,11 +70,11 @@ def main():
     raw_data_path = config["paths"]["raw_data_dir"] 
 
     pd.set_option("display.max_colwidth", None)
-    pObj = ParquetHandling
+    pObj = ParquetHandling(raw_data_path)
     cols = ["created_utc", "text"]
-    path = pObj.getParquetFromPath(pObj.raw_data_path) 
+    path = pObj.getParquetFromPath(pObj.path)
     df = pObj.toJsonSortByDate(path, cols, "2018-1-1", "2022-1-5")
-    print(df[df["text"].str.contains("removed", regex = False)])
+    print(df[df["text"].str.contains("I am a bot", regex = False)])
 
 
 
