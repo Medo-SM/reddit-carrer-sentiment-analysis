@@ -36,26 +36,24 @@ BATCH_SIZE = 50_000
 
 def clean_text(text: str) -> str:
     """
-    Cleans raw Reddit text by removing URLs, Markdown, and normalizing whitespace.
-
-    Args:
-        text: The raw text content from a Reddit post or comment.
-
-    Returns:
-        The cleaned text, or an empty string if the input is invalid.
+    Cleans raw Reddit text for sentiment analysis by decoding HTML entities,
+    removing URLs and Markdown markers, and normalizing whitespace.
     """
     if not isinstance(text, str):
         return ""
 
-    # 1. Remove URLs
-    text = re.sub(r"http\S+|www\S+", "", text, flags=re.IGNORECASE)
-    # 2. Remove Markdown markers (*, _, #)
+    # 1. Decode Reddit HTML entities (&amp; -> &, &gt; -> >)
+    text = html.unescape(text)
+    # 2. Replace Markdown links [anchor text](url) with just the anchor text
+    text = re.sub(r"\[([^\]]+)\]\((?:http|www)\S+\)", r"\1", text, flags=re.IGNORECASE)
+    # 3. Remove remaining raw URLs (note the escaped dot in www\.)
+    text = re.sub(r"https?://\S+|www\.\S+", "", text, flags=re.IGNORECASE)
+    # 4. Remove Reddit Markdown markers (*, _, #, `, ~, >, |)
     text = re.sub(r"[*_#`~>|]", "", text)
-    # 3. Normalize whitespace (strips leading/trailing, replaces multiple spaces/newlines)
+    # 5. Normalize whitespace
     text = re.sub(r"\s+", " ", text).strip()
 
     return text
-
 
 def read_zst_json_stream(file_path: Path):
     """
