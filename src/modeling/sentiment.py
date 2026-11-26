@@ -58,10 +58,17 @@ def score_roberta(
         def tqdm(it, **kwargs):
             return it
 
+    if not texts:
+        return pd.DataFrame(np.empty((0, 3), dtype=np.float32), columns=["negative", "neutral", "positive"])
+
+    # Sort by length before batching to minimize padding overhead on CPU, then restore order
+    order = sorted(range(len(texts)), key=lambda idx: len(texts[idx]))
+    ordered_texts = [texts[idx] for idx in order]
+
     results = []
     with torch.no_grad():
-        for i in tqdm(range(0, len(texts), batch_size), desc="RoBERTa"):
-            batch = texts[i : i + batch_size]
+        for i in tqdm(range(0, len(ordered_texts), batch_size), desc="RoBERTa"):
+            batch = ordered_texts[i : i + batch_size]
             encoded = tokenizer(
                 batch,
                 padding=True,
@@ -77,10 +84,9 @@ def score_roberta(
             probs = torch.nn.functional.softmax(logits, dim=-1).cpu().numpy()
             results.append(probs)
 
-    if results:
-        arr = np.vstack(results)
-    else:
-        arr = np.empty((0, 3), dtype=np.float32)
+    arr_sorted = np.vstack(results)
+    arr = np.empty_like(arr_sorted)
+    arr[order] = arr_sorted
     return pd.DataFrame(arr, columns=["negative", "neutral", "positive"])
 
 
