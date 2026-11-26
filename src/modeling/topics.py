@@ -28,9 +28,15 @@ def fit_topic_model(
     u_params["random_state"] = seed
     umap_model = UMAP(**u_params)
     hdbscan_model = HDBSCAN(**hdbscan_params)
+    vectorizer_model = CountVectorizer(
+        stop_words="english",
+        ngram_range=(1, 2),
+        min_df=1,
+    )
     topic_model = BERTopic(
         umap_model=umap_model,
         hdbscan_model=hdbscan_model,
+        vectorizer_model=vectorizer_model,
         top_n_words=top_n_words,
         verbose=False,
     )
@@ -105,6 +111,7 @@ def evaluate_topics(
             vocabulary=vocab,
             binary=True,
             lowercase=True,
+            ngram_range=(1, 2),
             token_pattern=r"(?u)\b\w+\b",
         )
         dtm = vectorizer.fit_transform(docs)
