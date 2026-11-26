@@ -1,4 +1,0 @@
-Generated on 2026-10-21T17:42:47.973551
-Python: 3.11.2 (main, Apr 28 2025, 14:11:48) [GCC 12.2.0]
-Pandas: 2.3.3
-NumPy: 2.4.0

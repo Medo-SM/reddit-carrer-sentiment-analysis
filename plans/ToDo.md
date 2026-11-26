@@ -1,68 +1,59 @@
 # ToDo
 
-See `plans/notebook-architecture.md` for the full build guide with cell-by-cell instructions.  
-See `plans/research-plan.md` for the research context, RQs, and timeline.
+See [notebook-architecture.md](notebook-architecture.md) for the architecture reference and [research-plan.md](research-plan.md) for the research context and RQs.
 
 ---
 
 ## Step 1 — Complete the Stratified Sampler
 
 - [x] Get the path of the parquet files (`src/ingest/sampling.py::get_parquet_from_path`)
-- [ ] Add `r/ExperiencedDevs` and `r/csMajors` to scraper targets (needed for RQ3 seniority split)
-- [ ] Run stratified sampler for all subreddits
-  - Sample ~30k rows per subreddit/type file
-  - Stratify by week using `created_utc` to preserve temporal distribution
+- [x] Run stratified sampler for all 7 existing subreddits (`2018-01-01` to `2022-12-31`)
+  - Sample up to 30k rows per subreddit/type file, stratified by ISO week
   - Write samples to `data/samples/2.0/`
+- [ ] **Phase 2 (Deferred — requires explicit download approval):** Scrape `2023–2025` + `r/ExperiencedDevs` and `r/csMajors` via `src/ingest/scraper/core_scraper.py`
 
 ---
 
 ## Step 2 — Build `src/modeling/`
 
-Create the modeling module (see `plans/notebook-architecture.md` for skeletons and `plans/modeling-rework.md` for technical detail):
-
-- [ ] `src/modeling/__init__.py` — `set_seed()` utility
-- [ ] `src/modeling/load.py` — dtype-aware `parse_created_utc()` + `load_samples()` (fixes Bug 1)
-- [ ] `src/modeling/text.py` — `apply_pipeline()` wrapping `src.ingest.sampling.process_pipeline`
-- [ ] `src/modeling/cache.py` — embeddings and topic model save/load
-- [ ] `src/modeling/tracking.py` — lightweight JSONL experiment log
-- [ ] `src/modeling/topics.py` — BERTopic wrapper + `topic_name_map()` + HDBSCAN sweep (fixes Bugs 2, 3, 4)
-- [ ] `src/modeling/sentiment.py` — RoBERTa batched inference + VADER cross-check (fixes Bug 6)
-
----
-
-## Step 3 — Build New Notebooks
-
-Replace `1.3_notebook.ipynb` with 4 focused notebooks (archive 1.3 when done):
-
-- [ ] `notebooks/2.0_sampling.ipynb` — sampling + date audit (replaces cells 1–16 of 1.3)
-- [ ] `notebooks/3.0_topic_modeling.ipynb` — BERTopic + HDBSCAN sweep (replaces cells 28–34 of 1.3)
-- [ ] `notebooks/4.0_sentiment_analysis.ipynb` — RoBERTa + VADER comparison (replaces cells 29–31 of 1.3; adds RQ1 figures)
-- [ ] `notebooks/5.0_results_and_viz.ipynb` — final paper figures (replaces cells 35–38 of 1.3)
-- [ ] Move `notebooks/1.3_notebook.ipynb` → `notebooks/archive/` after notebook 5.0 runs end-to-end
+- [x] `src/modeling/__init__.py` — `set_seed()` utility
+- [x] `src/modeling/load.py` — dtype-aware `parse_created_utc()`, `load_samples()`, `draw_stratified_subset()` (fixes Bugs 1 & 5)
+- [x] `src/modeling/text.py` — dual cleaners: `apply_sentiment_cleaning()` & `apply_topic_cleaning()`
+- [x] `src/modeling/cache.py` — embeddings, topic model, and Parquet score cache
+- [x] `src/modeling/tracking.py` — lightweight JSONL experiment log
+- [x] `src/modeling/topics.py` — BERTopic wrapper + `topic_name_map()` + NPMI/UMass/Diversity evaluation + `run_hdbscan_sweep()` + `reduce_outliers_safe()` (fixes Bugs 2, 3, 4)
+- [x] `src/modeling/sentiment.py` — genuine RoBERTa batched inference + VADER cross-check + Cohen's $\kappa$ & macro-F1 (fixes Bug 6)
+- [x] `src/modeling/stats.py` — quarterly aggregation, Mann-Kendall trend test, 4-regime Kruskal-Wallis/Mann-Whitney + Holm-Bonferroni tests
 
 ---
 
-## Step 4 — Write Tests
+## Step 3 — Notebooks & Runner
 
-- [ ] `tests/test_text.py` — `apply_pipeline` on URLs, code blocks, None, empty strings
-- [ ] `tests/test_dates.py` — `parse_created_utc` for int / float / str / datetime inputs
-- [ ] `tests/test_cache.py` — embeddings and topic model save/load round-trip
-- [ ] `tests/test_tracking.py` — experiment log write/read round-trip
-- [ ] `tests/test_sentiment.py` — VADER on known text; RoBERTa output shape check
-- [ ] `tests/test_topics.py` — `topic_name_map` shape + fit on ~1k docs (`@pytest.mark.slow`)
-
----
-
-## Step 5 — Config + Requirements
-
-- [ ] Add `modeling:` section to `config/config.yaml` (see `plans/notebook-architecture.md` §Phase 4)
-- [ ] Add `gensim`, `transformers`, `tqdm` to `requirements_cpu.txt` and `requirements_gpu.txt`
+- [x] `notebooks/2.0_sampling.ipynb` — sampling + date coverage audit
+- [x] `notebooks/3.0_topic_modeling.ipynb` — BERTopic + HDBSCAN sweep
+- [x] `notebooks/4.0_sentiment_analysis.ipynb` — genuine RoBERTa + VADER comparison
+- [x] `notebooks/5.0_results_and_viz.ipynb` — final figures & statistical summary
+- [x] `scripts/run_pipeline.py` — consolidated CLI orchestrator
+- [x] Move `notebooks/1.3_notebook.ipynb` → `notebooks/archive/`
 
 ---
 
-## Step 6 — Research Tasks (see `plans/research-plan.md` for full detail)
+## Step 4 — Tests
 
-- [ ] Post pre-registration on OSF (deadline: 24 October 2026)
-- [ ] Fix citation errors in original proposal before sharing externally
-- [ ] Double-annotate 600-post sample for 4-class taxonomy
-- [ ] Freeze LLM labeling prompt on development set
+- [x] `tests/test_cleaning.py`, `tests/test_sampling.py`, `tests/test_scraper_utils.py`
+- [x] `tests/test_text.py`, `tests/test_dates.py`, `tests/test_cache.py`, `tests/test_tracking.py`, `tests/test_sentiment.py`, `tests/test_topics.py`, `tests/test_stats.py`
+
+---
+
+## Step 5 — Config + Bibliography Verification
+
+- [x] Consolidated `config/config.yaml` (7 subreddits, `2018-01-01`–`2022-12-31`, `modeling:` section)
+- [x] Verified core citations via arXiv & OpenAlex into `data/final/references_verified.md` (excluding `arXiv:2311.15800` mental-health misattribution)
+
+---
+
+## Step 6 — Remaining Research Tasks (Human / Phase 2)
+
+- [ ] Execute Phase 2 scraping (2023–2025 + `r/ExperiencedDevs` + `r/csMajors`) for full post-ChatGPT ITS regression
+- [ ] Post pre-registration on OSF
+- [ ] Double-annotate 600-post sample for 4-class taxonomy & freeze LLM labeling prompt
