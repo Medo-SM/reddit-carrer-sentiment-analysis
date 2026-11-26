@@ -71,6 +71,7 @@ The project focuses on career-centric tech subreddits:
 | `r/dataengineering` | Data Engineering architecture and career discussions |
 | `r/cybersecurity` | Information security careers and industry updates |
 | `r/SoftwareEngineering` | Software engineering practices and career growth |
+| `r/QualityAssurance` | Software testing, QA automation, and career discussions |
 
 ---
 
@@ -94,24 +95,42 @@ reddit-carrer-sentiment-analysis/
 ├── models/                       # Model checkpoints & serialized models
 ├── notebooks/                    # Jupyter notebooks for EDA and modeling
 │   ├── 1.0_data_exploration.ipynb
-│   ├── 1.3_notebook.ipynb
-│   ├── archive/                  # Superseded notebook iterations (1.1, 1.2)
+│   ├── 2.0_sampling.ipynb        # Stratified sampling & coverage audit (2018-2022)
+│   ├── 3.0_topic_modeling.ipynb  # BERTopic + HDBSCAN sweep (NPMI/UMass/diversity)
+│   ├── 4.0_sentiment_analysis.ipynb # Full VADER + genuine RoBERTa comparison
+│   ├── 5.0_results_and_viz.ipynb # Longitudinal stats, regimes, and paper figures
+│   ├── archive/                  # Superseded notebook iterations (1.1, 1.2, 1.3)
 │   └── requirements.txt          # Notebook-specific environment requirements
-├── plans/                        # Planning documents for upcoming work
-│   └── modeling-rework.md
-├── scripts/                      # Operational data-repair tools
-│   ├── corrupted_line_locator.py # Line-by-line JSON validity inspector
-│   ├── corruption_fix.py         # Automated end-of-file truncation repair tool
-│   └── missing_dates_check.py    # Date coverage audit tool
+├── plans/                        # Planning documents and execution roadmap
+│   ├── ToDo.md
+│   ├── research-plan.md
+│   ├── modeling-rework.md
+│   ├── notebook-architecture.md
+│   └── archive/
+├── scripts/                      # Pipeline runner and data-repair tools
+│   ├── run_pipeline.py           # End-to-end Phases 2-5 modeling orchestrator
+│   └── fixes/
+│       ├── corrupted_line_locator.py
+│       ├── corruption_fix.py
+│       └── missing_dates_check.py
 ├── src/
 │   ├── __init__.py
-│   └── ingest/
-│       ├── __init__.py
-│       ├── sampling.py           # Sampling & text-cleaning pipeline
-│       ├── zst_to_parquet.py     # ZST stream decompressor & Parquet converter
-│       └── scraper/
-│           ├── __init__.py
-│           └── core_scraper.py   # Async Arctic Shift API scraper with retry logic
+│   ├── ingest/
+│   │   ├── __init__.py
+│   │   ├── sampling.py           # Stratified sampler + dual text cleaning
+│   │   ├── zst_to_parquet.py     # ZST stream decompressor & Parquet converter
+│   │   └── scraper/
+│   │       ├── __init__.py
+│   │       └── core_scraper.py   # Async Arctic Shift API scraper with retry logic
+│   └── modeling/
+│       ├── __init__.py           # set_seed() reproducibility utility
+│       ├── load.py               # Dtype-aware parse_created_utc(), load_samples(), subsetting
+│       ├── text.py               # Dual sentiment-safe & topic cleaning wrappers
+│       ├── cache.py              # Embeddings, BERTopic model, and Parquet score cache
+│       ├── tracking.py           # JSONL experiment logger
+│       ├── topics.py             # BERTopic wrapper, NPMI/UMass/diversity, HDBSCAN sweep
+│       ├── sentiment.py          # Batched RoBERTa + VADER + Cohen's kappa/macro-F1
+│       └── stats.py              # Quarterly aggregates, Mann-Kendall, 4-regime tests
 ├── tests/                        # Unit and integration tests
 │   └── __init__.py
 ├── CHANGELOG.md                  # Project changelog generated via conventional commits
@@ -230,11 +249,22 @@ learning_rate = config["training"]["learning_rate"]
 
 ## 🧪 Exploration & Modeling
 
-Explore data and experiment with models using the provided notebooks in `notebooks/`:
+Run the consolidated pipeline end-to-end or step through the modular notebooks in `notebooks/`:
 
-- `1.0_data_exploration.ipynb`: Data loading, word frequencies, and initial text cleaning diagnostics.
-- `1.3_notebook.ipynb`: Topic modeling with BERTopic, sentiment scoring, and topic evolution visualization.
-- `archive/`: Superseded notebook iterations (`1.1`, `1.2`) kept for reference.
+- **Automated CLI Pipeline:**
+  ```bash
+  make all        # compile + fast unit tests + smoke test
+  make pipeline   # execute Phases 2-5 -> data/samples/2.0/, data/processed/, data/final/
+  ```
+- **Modular Notebooks:**
+  - `1.0_data_exploration.ipynb`: Initial EDA and word frequency diagnostics.
+  - `2.0_sampling.ipynb`: Stratified ISO-week sampling (2018–2022, 7 subreddits) & coverage audit.
+  - `3.0_topic_modeling.ipynb`: BERTopic + HDBSCAN sweep with English stopwords/bigrams and NPMI/UMass/diversity metrics.
+  - `4.0_sentiment_analysis.ipynb`: Full-sample VADER + genuine RoBERTa (`cardiffnlp/twitter-roberta-base-sentiment`) validation (RQ1).
+  - `5.0_results_and_viz.ipynb`: Quarterly aggregation, Mann-Kendall trend tests, 4-regime Kruskal-Wallis/Mann-Whitney comparisons, and 300-DPI figures.
+  - `archive/`: Superseded notebook iterations (`1.1`, `1.2`, `1.3`) kept for reference.
+
+Generated tables, 300-DPI figures, verified bibliography (`references_verified.md`), and the summary report (`results_report.md`) are written to `data/final/`.
 
 ---
 
