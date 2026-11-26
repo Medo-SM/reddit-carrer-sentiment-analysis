@@ -1,7 +1,14 @@
 """Tests for text cleaning utilities (src/ingest/sampling.py)."""
-import pytest
+import pandas as pd
 
-from src.ingest.sampling import clean_code_snippets, clean_text, process_pipeline
+from src.ingest.sampling import (
+    SentimentTextCleaner,
+    clean_code_snippets,
+    clean_sentiment_text,
+    clean_text,
+    is_noise_text,
+    process_pipeline,
+)
 
 
 class TestCleanText:
@@ -49,3 +56,28 @@ class TestProcessPipeline:
 
     def test_empty_input(self):
         assert process_pipeline("") == ""
+
+
+class TestSentimentTextCleaner:
+    def test_preserves_punctuation_emojis_and_negation(self):
+        raw = "I do NOT like this &amp; hate [these docs](https://example.com)!! **Terrible** 😡"
+        cleaned = clean_sentiment_text(raw)
+        assert "NOT" in cleaned
+        assert "&" in cleaned and "&amp;" not in cleaned
+        assert "these docs" in cleaned
+        assert "https://example.com" not in cleaned
+        assert "!!" in cleaned
+        assert "😡" in cleaned
+        assert "**" not in cleaned
+
+    def test_noise_filtering(self):
+        assert is_noise_text("[deleted]")
+        assert is_noise_text("[removed]")
+        assert is_noise_text("I am a bot, this action was performed automatically.")
+        assert not is_noise_text("Great engineering role!")
+
+    def test_clean_dataframe_drops_noise(self):
+        df = pd.DataFrame({"text": ["[deleted]", "I am a bot", "Loved the interview!"]})
+        cleaned = SentimentTextCleaner().clean_dataframe(df)
+        assert len(cleaned) == 1
+        assert cleaned["clean_text"].iloc[0] == "Loved the interview!"
